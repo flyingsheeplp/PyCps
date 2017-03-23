@@ -36,49 +36,27 @@ def atom(token):
         except ValueError:
             return Symbol(token)
 
-def rator(m):
-    print(m)
-    cps_trans(m)
+
 def apply_cps(rator,rand,k):
-    print("in apply cps rator:" + str(rator) + "  rand: "+ str(rand))
-    ab = ['k']
-    ae = []
+    #print("in apply cps rator:" + str(rator) + "  rand: "+ str(rand)) 
     if(rator[0] != 'lambda'):
-        ae.append(rator)
-        for r in rand:
-            ae.append(r)
-        return ae
+        rL=[rator]
+        if isinstance(rand,List):
+            for r in rand:
+                rL.append(r)
+        else:
+            rL.append(rand)
+        return ['lambda' ,['k'],['k' ,rL]]
+    #print(rator)
+    #print(cps_trans(rator,lambda m: m))
+    #print(rand)
+    #print(cps_trans(rand,lambda n:n))
+    t = [[cps_trans(rator,lambda m: m),cps_trans(rand,lambda n:n)],['lambda',['n'],'n']]
+    #print(t)
+    return t
 
-    print(cps_trans(rator,lambda m:m))
-
-    return cps_trans(rator,lambda m:cps_trans(rand,lambda n: m.append(n)))
-
-
-
-def con_param(param):
-    pl = []
-    for p in param:
-        pl.append(p)
-    pl.append('k')
-    return pl
-
-def con_body(body,k):
-    bs = ['k']
-    be = []
-    if(body[0] != 'lambda'):
-        for b in body:
-            be.append(b);
-        bs.append(be)
-    else:
-        (_,ip,ib) = body
-
-        t = lambda_cps(ip,ib,lambda l:l)
-
-    return bs
-
-def lambda_cps(p,b,k):
-
-    return k(['lambda',p,cps_trans(b,lambda m:m)])
+def lambda_cps(p,b,k): 
+    return ['lambda',p,cps_trans(b,lambda b:b)]
 
 
 def cps_trans(ast,k):
@@ -98,7 +76,7 @@ def cps_trans(ast,k):
             rand = rand[0]
 
         t = apply_cps(rator,rand,k)
-        print("apply_cps res:" + str(t))
+        #print("apply_cps res:" + str(t))
 
         return t
 
